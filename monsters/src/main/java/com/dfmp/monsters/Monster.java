@@ -1,6 +1,7 @@
 package com.dfmp.monsters;
 
 public class Monster {
+	private long id;
 	private String name;
 	private String[] type;
 	private String size;
@@ -12,14 +13,24 @@ public class Monster {
 		super();
 	}
 
-	public Monster(String name, String[] type, String size, String[] locations, Integer force, String[] skills) {
+	public Monster(long id, String name, String[] type, String size, String[] locations, Integer force,
+			String[] skills) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.type = type;
 		this.size = size;
 		this.locations = locations;
 		this.force = force;
 		this.skills = skills;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public String getName() {
