@@ -1,18 +1,21 @@
 package com.dfmp.battles;
 
+import java.util.Calendar;
 
 public class BattleEvent extends Event {
 	private long agressorMonsterId;
 	private String skillUsed;
-	private long attackForce;
+	private long attackDamage;
 	public BattleEvent() {
 		super();
 	}
-	public BattleEvent(long agressorMonsterId, String skillUsed, long attackForce) {
+	public BattleEvent(long targetedMonsterId, long agressorMonsterId, String skillUsed, long attackDamage) {
 		super();
+		this.setData(Calendar.getInstance().getTime());
+		this.setTargetedMonsterId(targetedMonsterId);
 		this.agressorMonsterId = agressorMonsterId;
 		this.skillUsed = skillUsed;
-		this.attackForce = attackForce;
+		this.attackDamage = attackDamage;
 	}
 	public long getAgressorMonsterId() {
 		return agressorMonsterId;
@@ -26,11 +29,11 @@ public class BattleEvent extends Event {
 	public void setSkillUsed(String skillUsed) {
 		this.skillUsed = skillUsed;
 	}
-	public long getAttackForce() {
-		return attackForce;
+	public long getAttackDamage() {
+		return attackDamage;
 	}
-	public void setAttackForce(long attackForce) {
-		this.attackForce = attackForce;
+	public void setAttackDamage(long attackDamage) {
+		this.attackDamage = attackDamage;
 	}
 
 }
