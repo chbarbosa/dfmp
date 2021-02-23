@@ -5,6 +5,7 @@ import java.util.Date;
 public class TamedMonster {
 	private long id;
 	private long tamedByUser;
+	private long level = 1L;
 	private Date tamedDate;
 	private Monster monster;
 	public TamedMonster() {
@@ -16,6 +17,9 @@ public class TamedMonster {
 		this.tamedByUser = tamedByUser;
 		this.tamedDate = tamedDate;
 		this.monster = monster;
+	}
+	void levelUp() {
+		this.level = level++;
 	}
 	public long getId() {
 		return id;
@@ -40,6 +44,12 @@ public class TamedMonster {
 	}
 	public void setMonster(Monster monster) {
 		this.monster = monster;
+	}
+	public long getLevel() {
+		return level;
+	}
+	public void setLevel(long level) {
+		this.level = level;
 	}
 
 }
