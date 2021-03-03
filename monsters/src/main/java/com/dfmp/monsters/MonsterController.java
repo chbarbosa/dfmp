@@ -23,7 +23,7 @@ public class MonsterController {
 				"small",
 				Stream.of("forest", "fields").toArray(String[]::new),
 				1,
-				Stream.of("fly", "sting").toArray(String[]::new)
+				Arrays.asList(1L, 2L)
 				);
 		this.monsters = Arrays.asList(
 				monsterExample,
@@ -32,13 +32,13 @@ public class MonsterController {
 						"regular",
 						Stream.of("desert", "rocks").toArray(String[]::new),
 						1,
-						Stream.of("grab", "sting").toArray(String[]::new)),
+						Arrays.asList(3L, 2L)),
 				new Monster(-3L, "M c.",
 						Stream.of("flying").toArray(String[]::new),
 						"small",
 						Stream.of("forest", "fields").toArray(String[]::new),
 						1,
-						Stream.of("fly", "peck").toArray(String[]::new))
+						Arrays.asList(1L, 4L))
 				);
 		this.tamedMonsters = Arrays.asList(
 				new TamedMonster(-1L, -1L, Calendar.getInstance().getTime(), monsterExample),

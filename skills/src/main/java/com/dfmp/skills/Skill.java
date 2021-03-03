@@ -2,6 +2,7 @@ package com.dfmp.skills;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class Skill {
 	private long id;
@@ -12,8 +13,9 @@ public class Skill {
 	private Long heal;
 	private String status;
 	private double levelMultiplier;
+	private List<Long> monsters;
 	public Skill(long id, String description, Long force, Long heal,
-			String status, double levelMultiplier) {
+			String status, double levelMultiplier, List<Long> monsters) {
 		super();
 		this.id = id;
 		this.description = description;
@@ -22,6 +24,7 @@ public class Skill {
 		this.heal = heal;
 		this.status = status;
 		this.levelMultiplier = levelMultiplier;
+		this.monsters = monsters;
 	}
 	public long getId() {
 		return id;
@@ -70,6 +73,12 @@ public class Skill {
 	}
 	public void setLevelMultiplier(double levelMultiplier) {
 		this.levelMultiplier = levelMultiplier;
+	}
+	public List<Long> getMonsters() {
+		return monsters;
+	}
+	public void setMonsters(List<Long> monsters) {
+		this.monsters = monsters;
 	}
 
 }

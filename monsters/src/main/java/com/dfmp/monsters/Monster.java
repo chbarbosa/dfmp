@@ -1,5 +1,7 @@
 package com.dfmp.monsters;
 
+import java.util.List;
+
 public class Monster {
 	private long id;
 	private String name;
@@ -7,14 +9,14 @@ public class Monster {
 	private String size;
 	private String[] locations;
 	private Integer force;
-	private String[] skills;
+	private List<Long> skills;
 
 	public Monster() {
 		super();
 	}
 
 	public Monster(long id, String name, String[] type, String size, String[] locations, Integer force,
-			String[] skills) {
+			List<Long> skills) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -73,11 +75,11 @@ public class Monster {
 		this.force = force;
 	}
 
-	public String[] getSkills() {
+	public List<Long> getSkills() {
 		return skills;
 	}
 
-	public void setSkills(String[] skills) {
+	public void setSkills(List<Long> skills) {
 		this.skills = skills;
 	}
 
