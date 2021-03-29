@@ -3,18 +3,28 @@ package com.dfmp.monsters;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.dfmp.monsters.clients.SkillClient;
 
 @RestController
 public class MonsterController {
 	private List<Monster> monsters;
 	private List<TamedMonster> tamedMonsters;
 	private Monster monsterExample;
+	@Value("${NUM_THREADS}")
+	private int numThreads;
+	@Autowired
+	private SkillClient skillClient;
 
 	public MonsterController() {
 		super();
@@ -65,8 +75,44 @@ public class MonsterController {
 	}
 
 	@GetMapping("/monster/tamed/{user}")
-	public List<TamedMonster> getTamedMonsterByUserID(@PathVariable long user) {
-		return this.tamedMonsters.stream()
-				.filter(tm -> tm.getTamedByUser() == user).collect(Collectors.toList());
+	public List<TamedMonsterVO> getTamedMonsterByUserID(@PathVariable long user) throws InterruptedException {
+		List<TamedMonsterVO> tms = this.tamedMonsters.stream().filter(tm -> tm.getTamedByUser() == user)
+				.map(TamedMonsterVO::new).collect(Collectors.toList());
+		for (TamedMonsterVO vo : tms) {
+			vo.setSkills(genList(vo.getMonster().getSkills()));
+		}
+		return tms;
+	}
+
+	private List<SkillVO> genList(List<Long> skills) throws InterruptedException {
+		List<RecThread> threads = skills.stream().map(sId -> new RecThread(sId, this.skillClient))
+				.collect(Collectors.toList());
+		Executor executor = Executors.newFixedThreadPool(numThreads);
+		threads.forEach(executor::execute);
+		for (RecThread t : threads) {
+			//let exception goes up
+			t.join();
+		}
+		return threads.stream().map(t -> t.getSkill()).collect(Collectors.toList());
+	}
+	class RecThread extends Thread {
+		private SkillVO vo;
+		private Long skillId;
+		private SkillClient skillClient;
+
+		public SkillVO getSkill() {
+			return vo;
+		}
+
+		public RecThread(Long skillId, SkillClient skillClient) {
+			super();
+			this.skillId = skillId;
+			this.skillClient = skillClient;
+		}
+
+		@Override
+		public void run() {
+			this.vo = this.skillClient.getSkill(this.skillId);
+		}
 	}
 }
