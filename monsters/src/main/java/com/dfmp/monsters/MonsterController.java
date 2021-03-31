@@ -3,8 +3,8 @@ package com.dfmp.monsters;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,12 +51,12 @@ public class MonsterController {
 						Arrays.asList(1L, 4L))
 				);
 		this.tamedMonsters = Arrays.asList(
-				new TamedMonster(-1L, -1L, Calendar.getInstance().getTime(), monsterExample),
-				new TamedMonster(-2L, -1L, Calendar.getInstance().getTime(), monsterExample),
-				new TamedMonster(-3L, -1L, Calendar.getInstance().getTime(), monsterExample),
-				new TamedMonster(-4L, -2L, Calendar.getInstance().getTime(), monsterExample),
-				new TamedMonster(-5L, -2L, Calendar.getInstance().getTime(), monsterExample),
-				new TamedMonster(-6L, -3L, Calendar.getInstance().getTime(), monsterExample)
+				new TamedMonster(-1L, 10L, Calendar.getInstance().getTime(), monsterExample),
+				new TamedMonster(-2L, 10L, Calendar.getInstance().getTime(), monsterExample),
+				new TamedMonster(-3L, 10L, Calendar.getInstance().getTime(), monsterExample),
+				new TamedMonster(-4L, 20L, Calendar.getInstance().getTime(), monsterExample),
+				new TamedMonster(-5L, 20L, Calendar.getInstance().getTime(), monsterExample),
+				new TamedMonster(-6L, 30L, Calendar.getInstance().getTime(), monsterExample)
 				);
 	}
 
@@ -87,12 +87,10 @@ public class MonsterController {
 	private List<SkillVO> genList(List<Long> skills) throws InterruptedException {
 		List<RecThread> threads = skills.stream().map(sId -> new RecThread(sId, this.skillClient))
 				.collect(Collectors.toList());
-		Executor executor = Executors.newFixedThreadPool(numThreads);
-		threads.forEach(executor::execute);
-		for (RecThread t : threads) {
-			//let exception goes up
-			t.join();
-		}
+		ForkJoinPool customThreadPool = new ForkJoinPool(numThreads);
+		threads.forEach(customThreadPool::execute);
+		// Wait until they are all done
+		customThreadPool.awaitTermination(250, TimeUnit.MILLISECONDS);
 		return threads.stream().map(t -> t.getSkill()).collect(Collectors.toList());
 	}
 	class RecThread extends Thread {
