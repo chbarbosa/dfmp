@@ -1,5 +1,6 @@
 package com.dfmp.monsters;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class TamedMonsterVO {
 	private List<SkillVO> skills;
 	public TamedMonsterVO(TamedMonster tamedMonster) {
 		super();
+		this.id = tamedMonster.getId();
 		this.tamedByUser = tamedMonster.getTamedByUser();
 		this.tamedDate = tamedMonster.getTamedDate();
 		this.monster = tamedMonster.getMonster();
@@ -54,6 +56,12 @@ public class TamedMonsterVO {
 	}
 	public void setSkills(List<SkillVO> skills) {
 		this.skills = skills;
+	}
+	public void add(SkillVO skill) {
+		if (this.skills == null) {
+			this.skills = new ArrayList<>();
+		}
+		this.skills.add(skill);
 	}
 
 }

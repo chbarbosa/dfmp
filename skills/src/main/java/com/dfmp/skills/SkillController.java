@@ -20,7 +20,9 @@ public class SkillController {
 				new Skill(1L, "fly", 50L, null, null, 0.05D, Arrays.asList(-1L, -3L)),
 				new Skill(2L, "sting", 50L, null, null, 0.05D, Arrays.asList(-1L, -2L)),
 				new Skill(3L, "grab", 50L, null, null, 0.05D, Arrays.asList(-2L)),
-				new Skill(4L, "peck", 50L, null, null, 0.05D, Arrays.asList(-3L))
+				new Skill(4L, "peck", 50L, null, null, 0.05D, Arrays.asList(-3L)),
+				new Skill(5L, "punch", 25L, null, null, 0.025D, null),
+				new Skill(6L, "kick", 20L, null, null, 0.02D, null)
 				);
 	}
 

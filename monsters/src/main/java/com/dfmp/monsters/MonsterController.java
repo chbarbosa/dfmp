@@ -1,9 +1,15 @@
 package com.dfmp.monsters;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,7 +39,7 @@ public class MonsterController {
 				"small",
 				Stream.of("forest", "fields").toArray(String[]::new),
 				1,
-				Arrays.asList(1L, 2L)
+				Arrays.asList(1L, 2L, 3L, 4L)
 				);
 		this.monsters = Arrays.asList(
 				monsterExample,
@@ -75,42 +81,26 @@ public class MonsterController {
 	}
 
 	@GetMapping("/monster/tamed/{user}")
-	public List<TamedMonsterVO> getTamedMonsterByUserID(@PathVariable long user) throws InterruptedException {
+	public List<TamedMonsterVO> getTamedMonsterByUserID(@PathVariable long user) throws InterruptedException, ExecutionException {
 		List<TamedMonsterVO> tms = this.tamedMonsters.stream().filter(tm -> tm.getTamedByUser() == user)
 				.map(TamedMonsterVO::new).collect(Collectors.toList());
-		for (TamedMonsterVO vo : tms) {
-			vo.setSkills(genList(vo.getMonster().getSkills()));
+		List<Future<TamedMonsterVO>> futures = new ArrayList<>();
+		ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+		tms.forEach(vo ->
+			futures.addAll(vo.getMonster().getSkills().stream()
+					.map(s -> executorService.submit(() -> recSkill(vo, s))).collect(Collectors.toList()))
+		);
+		executorService.awaitTermination(750, TimeUnit.MILLISECONDS);
+		Set<TamedMonsterVO> result = new HashSet<>();
+		for (Future<TamedMonsterVO> f : futures) {
+			result.add(f.get());
 		}
-		return tms;
+		return List.copyOf(result);
 	}
 
-	private List<SkillVO> genList(List<Long> skills) throws InterruptedException {
-		List<RecThread> threads = skills.stream().map(sId -> new RecThread(sId, this.skillClient))
-				.collect(Collectors.toList());
-		ForkJoinPool customThreadPool = new ForkJoinPool(numThreads);
-		threads.forEach(customThreadPool::execute);
-		// Wait until they are all done
-		customThreadPool.awaitTermination(250, TimeUnit.MILLISECONDS);
-		return threads.stream().map(t -> t.getSkill()).collect(Collectors.toList());
-	}
-	class RecThread extends Thread {
-		private SkillVO vo;
-		private Long skillId;
-		private SkillClient skillClient;
-
-		public SkillVO getSkill() {
-			return vo;
-		}
-
-		public RecThread(Long skillId, SkillClient skillClient) {
-			super();
-			this.skillId = skillId;
-			this.skillClient = skillClient;
-		}
-
-		@Override
-		public void run() {
-			this.vo = this.skillClient.getSkill(this.skillId);
-		}
+	private TamedMonsterVO recSkill(TamedMonsterVO vo, Long skillId) {
+		vo.add(this.skillClient.getSkill(skillId));
+		System.out.println("recuperado " + skillId);
+		return vo;
 	}
 }
